@@ -5,6 +5,7 @@
 </head>
 <body>
     <h1>Loan Application Form</h1>
+    <p><a href="analytics.php">Analytics</a></p>
     <form action="submit_application.php" method="POST">
         <div>
             <label for="applicant_name">Applicant Name:</label>
