@@ -1,13 +1,23 @@
 from flask import Flask, request, jsonify
-import logging # Optional: for basic logging
+import logging
+import os
+from config import API_KEY
 
-# Configure basic logging (optional but good practice)
+EXPECTED_API_KEY = API_KEY
+
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
 @app.route('/check_eligibility', methods=['POST'])
 def check_eligibility():
+    # --- API Key Check ---
+    received_key = request.headers.get('X-API-Key')
+    if not received_key or received_key != EXPECTED_API_KEY:
+        app.logger.warning("Unauthorized API access attempt.")
+        abort(401, description="Missing or invalid API Key") # Use abort for standard errors
+    # --- End API Key Check ---
+
     """
     Checks basic loan eligibility based on amount and income.
     Expects JSON: {"amount": 10000, "income": 3500}
