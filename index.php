@@ -30,7 +30,7 @@
         // Optional: Display feedback messages here if redirected back
         session_start();
         if (isset($_SESSION['message'])) {
-            echo "<p>" . htmlspecialchars($_SESSION['message']) . "</p>";
+            echo "<p style='color:green;'>" . htmlspecialchars($_SESSION['message']) . "</p>";
             unset($_SESSION['message']); // Clear message after displaying
         }
     ?>
