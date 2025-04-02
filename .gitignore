@@ -12,3 +12,7 @@ Thumbs.db
 # IDE files
 .idea/
 .vscode/
+
+# App Config Files
+config.php
+python_api/config.py

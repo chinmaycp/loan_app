@@ -1,11 +1,14 @@
 <?php
 session_start(); // Start session to store feedback message
 
-// --- Database Configuration (Ideally move to a separate config file) ---
-$db_host = 'localhost'; // Or your DB host (e.g., 127.0.0.1)
-$db_name = 'loan_app_db';
-$db_user = 'root'; // Your DB username (default for XAMPP)
-$db_pass = '';   // Your DB password (default for XAMPP)
+// --- Database Configuration (import from Config file) ---
+require_once 'config.php';
+$db_host = DB_HOST;
+$db_name = DB_NAME;
+$db_user = DB_USER;
+$db_pass = DB_PASS;
+$api_key = PYTHON_API_KEY;
+$api_url = PYTHON_API_URL;
 
 // --- Receive and Basic Validation ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -46,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $api_payload = json_encode($api_data);
 
             // --- Call Python API using cURL ---
-            $api_url = 'http://127.0.0.1:5001/check_eligibility'; // Ensure Python API is running!
             $ch = curl_init($api_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
@@ -54,6 +56,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($api_payload)
+            ]);
+            // Add the API Key Header to cURL options
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($api_payload),
+                'X-API-Key: ' . $api_key // Add this line
             ]);
 
             $api_response_body = curl_exec($ch);

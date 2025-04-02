@@ -1,9 +1,13 @@
 <?php
-// --- Database Configuration (Ideally require 'config.php') ---
-$db_host = 'localhost';
-$db_name = 'loan_app_db';
-$db_user = 'root';
-$db_pass = '';
+
+// --- Database Configuration (import from Config file) ---
+require_once 'config.php';
+$db_host = DB_HOST;
+$db_name = DB_NAME;
+$db_user = DB_USER;
+$db_pass = DB_PASS;
+$api_key = PYTHON_API_KEY;
+$api_url = PYTHON_API_URL;
 
 $total_apps = 0;
 $avg_amount = 0;
