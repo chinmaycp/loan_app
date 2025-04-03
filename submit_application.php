@@ -1,8 +1,9 @@
 <?php
+require_once 'config.php';
+
 session_start(); // Start session to store feedback message
 
 // --- Database Configuration (import from Config file) ---
-require_once 'config.php';
 $db_host = DB_HOST;
 $db_name = DB_NAME;
 $db_user = DB_USER;
@@ -12,16 +13,16 @@ $api_url = PYTHON_API_URL;
 
 // --- Receive and Basic Validation ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $applicant_name = trim($_POST['applicant_name'] ?? '');
-    $requested_amount = trim($_POST['requested_amount'] ?? '');
-    $monthly_income = trim($_POST['monthly_income'] ?? '');
-    $loan_purpose = trim($_POST['loan_purpose'] ?? '');
+    $applicant_name = filter_input(INPUT_POST, 'applicant_name', FILTER_SANITIZE_SPECIAL_CHARS);
+    $requested_amount = filter_input(INPUT_POST, 'requested_amount', FILTER_VALIDATE_FLOAT);
+    $monthly_income = filter_input(INPUT_POST, 'monthly_income', FILTER_VALIDATE_FLOAT);
+    $loan_purpose = filter_input(INPUT_POST, 'loan_purpose', FILTER_SANITIZE_SPECIAL_CHARS);
 
     $errors = [];
-    if (empty($applicant_name)) $errors[] = "Applicant name is required.";
-    if (!is_numeric($requested_amount) || $requested_amount <= 0) $errors[] = "Valid requested amount is required.";
-    if (!is_numeric($monthly_income) || $monthly_income <= 0) $errors[] = "Valid monthly income is required.";
-    if (empty($loan_purpose)) $errors[] = "Loan purpose is required.";
+    if (empty(trim($applicant_name))) $errors[] = "Applicant name is required.";
+    if (!is_numeric($requested_amount) || $requested_amount === false || $requested_amount <= 0) $errors[] = "Valid requested amount (positive number) is required.";
+    if (!is_numeric($monthly_income) || $monthly_income === false || $monthly_income <= 0) $errors[] = "Valid monthly income (non-negative number) is required.";
+    if (empty(trim($loan_purpose))) $errors[] = "Loan purpose is required.";
 
     if (empty($errors)) {
         // --- Database Connection & Insertion ---
@@ -110,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
          // Store errors and redirect back
         $_SESSION['message'] = "Submission failed: " . implode(" ", $errors);
+        $_SESSION['form_data'] = $_POST; // Store form data to repopulate
         header("Location: index.php");
         exit();
     }
